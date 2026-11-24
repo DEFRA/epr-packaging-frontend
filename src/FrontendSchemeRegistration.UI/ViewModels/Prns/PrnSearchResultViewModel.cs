@@ -9,5 +9,9 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     [ExcludeFromCodeCoverage]
     public class PrnSearchResultViewModel : BasePrnViewModel
     {
+        /// <summary>
+        ///     The note's EPR Next Gen PRN page when ShowPrnsOnCdp is on; null keeps the packaging PRN page.
+        /// </summary>
+        public string? PrnHref { get; set; }
     }
 }

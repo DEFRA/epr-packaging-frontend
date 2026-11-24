@@ -115,7 +115,7 @@
 						<tbody class="govuk-table__body">
 							<tr class="govuk-table__row @borderBottomOff">
 								<td class="govuk-table__cell @borderBottomOff">
-									<a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId })" aria-label="@Localizer["prn_or_pern_number"] @prn.PrnOrPernNumber">
+									<a class="govuk-link" href="@(prn.PrnHref ?? Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId }))" aria-label="@Localizer["prn_or_pern_number"] @prn.PrnOrPernNumber">
 										@prn.PrnOrPernNumber
 										<span class="govuk-visually-hidden">@Localizer["prn_or_pern_number"]</span>
 									</a>

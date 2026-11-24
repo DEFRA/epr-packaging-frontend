@@ -1,9 +1,12 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers.Prns
 {
     using AutoFixture;
+    using EPR.Common.Authorization.Models;
     using EPR.Common.Authorization.Sessions;
     using FluentAssertions;
     using FrontendSchemeRegistration.Application.Constants;
+    using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+    using FrontendSchemeRegistration.Application.Options;
     using FrontendSchemeRegistration.UI.Constants;
     using FrontendSchemeRegistration.UI.Controllers.Prns;
     using FrontendSchemeRegistration.UI.Extensions;
@@ -17,6 +20,7 @@
     using Microsoft.AspNetCore.Mvc.Routing;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Extensions.Options;
     using Moq;
     using NUnit.Framework;
     using System.Text;
@@ -32,6 +36,7 @@
         
         private Mock<Microsoft.FeatureManagement.IFeatureManager> _featureManagerMock;
         private Microsoft.Extensions.Time.Testing.FakeTimeProvider _timeProvider;
+        private const string WasteObligationsBaseAddress = "https://waste-obligations";
 
         private PrnsController _controller;
         private static readonly IFixture _fixture = new Fixture();
@@ -49,7 +54,8 @@
             _featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
             _timeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider(new DateTimeOffset(2026, 10, 16, 0, 0, 0, TimeSpan.Zero));
 
-            _controller = new PrnsController(_prnServiceMock.Object, _sessionManagerMock.Object, _mockDownloadPrnService.Object, _featureManagerMock.Object, _timeProvider)
+            _controller = new PrnsController(_prnServiceMock.Object, _sessionManagerMock.Object, _mockDownloadPrnService.Object, _featureManagerMock.Object, _timeProvider,
+                Options.Create(new CsocOptions { WasteObligationsBaseAddress = WasteObligationsBaseAddress }))
             {
                 Url = _urlHelperMock.Object
             };
@@ -644,6 +650,110 @@
             result.Should().NotBeNull();
             result.Value.Should().BeEquivalentTo(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
             _mockDownloadPrnService.Verify(x => x.DownloadPrnAsync(prnId, "SelectSinglePrn", It.IsAny<ActionContext>()), Times.Once);
+        }
+        private static PrnSearchResultListViewModel SearchResultsWithEachStatus(int complianceYear) => new()
+        {
+            ComplianceYear = complianceYear,
+            ActivePageOfResults =
+            [
+                new PrnSearchResultViewModel { ExternalId = Guid.NewGuid(), ApprovalStatus = PrnStatus.AwaitingAcceptance },
+                new PrnSearchResultViewModel { ExternalId = Guid.NewGuid(), ApprovalStatus = PrnStatus.Accepted },
+                new PrnSearchResultViewModel { ExternalId = Guid.NewGuid(), ApprovalStatus = PrnStatus.Rejected },
+                new PrnSearchResultViewModel { ExternalId = Guid.NewGuid(), ApprovalStatus = PrnStatus.Cancelled }
+            ]
+        };
+
+        private void GivenSignedInAs(Organisation organisation, RegistrationSession registrationSession = null, int? selectedObligationYear = null)
+        {
+            var userData = new UserData { Organisations = [organisation] };
+            _controller.ControllerContext.HttpContext.User = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(
+                [
+                    new System.Security.Claims.Claim(
+                        System.Security.Claims.ClaimTypes.UserData,
+                        System.Text.Json.JsonSerializer.Serialize(userData))
+                ]));
+            _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(
+                new FrontendSchemeRegistrationSession
+                {
+                    RegistrationSession = registrationSession ?? new RegistrationSession(),
+                    PrnSession = new PrnSession { SelectedObligationYear = selectedObligationYear }
+                });
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenShowPrnsOnCdp_LinksAwaitingAcceptedAndRejectedNotesToEprNextGenForTheYear()
+        {
+            var organisationId = Guid.NewGuid();
+            GivenSignedInAs(new Organisation { Id = organisationId, OrganisationRole = OrganisationRoles.Producer });
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            var results = SearchResultsWithEachStatus(2026);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(results);
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            var model = response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>().Which;
+            var prns = model.ActivePageOfResults;
+            prns[0].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/producer/{organisationId}/prns/{prns[0].ExternalId}?year=2026");
+            prns[1].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/producer/{organisationId}/prns/{prns[1].ExternalId}?year=2026");
+            prns[2].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/producer/{organisationId}/prns/{prns[2].ExternalId}?year=2026");
+            prns[3].PrnHref.Should().BeNull();
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenShowPrnsOnCdpForAComplianceScheme_LinksToTheSelectedScheme()
+        {
+            var schemeId = Guid.NewGuid();
+            GivenSignedInAs(
+                new Organisation { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.ComplianceScheme },
+                new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = schemeId } });
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            var results = SearchResultsWithEachStatus(2025);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(results);
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            var prns = response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>().Which.ActivePageOfResults;
+            prns[0].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/cso/{schemeId}/prns/{prns[0].ExternalId}?year=2025");
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenShowPrnsOnCdpIsOff_KeepsThePackagingLinks()
+        {
+            GivenSignedInAs(new Organisation { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer });
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(false);
+            var results = SearchResultsWithEachStatus(2026);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(results);
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>()
+                .Which.ActivePageOfResults.Should().OnlyContain(prn => prn.PrnHref == null);
+        }
+        [Test]
+        public async Task SearchPrns_WhenAYearWasChosen_LinksToTheChosenYearNotTheCurrentOne()
+        {
+            var organisationId = Guid.NewGuid();
+            GivenSignedInAs(new Organisation { Id = organisationId, OrganisationRole = OrganisationRoles.Producer }, selectedObligationYear: 2025);
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(SearchResultsWithEachStatus(2026));
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            var prns = response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>().Which.ActivePageOfResults;
+            prns[0].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/producer/{organisationId}/prns/{prns[0].ExternalId}?year=2025");
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenTheUserHasNoUserData_KeepsThePackagingLinks()
+        {
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(SearchResultsWithEachStatus(2026));
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>()
+                .Which.ActivePageOfResults.Should().OnlyContain(prn => prn.PrnHref == null);
         }
     }
 }

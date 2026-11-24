@@ -1,12 +1,17 @@
-﻿using EPR.Common.Authorization.Sessions;
+﻿using System.Security.Claims;
+using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 using Newtonsoft.Json;
@@ -26,10 +31,13 @@ public class PrnsController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IFeatureManager _featureManager;
     private readonly TimeProvider _timeProvider;
+    private readonly IOptions<CsocOptions> _csocOptions;
 
     public PrnsController(IPrnService prnService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-                          IDownloadPrnService downloadPrnService, IFeatureManager featureManager, TimeProvider timeProvider)
+                          IDownloadPrnService downloadPrnService, IFeatureManager featureManager, TimeProvider timeProvider,
+                          IOptions<CsocOptions> csocOptions)
     {
+        _csocOptions = csocOptions;
         _featureManager = featureManager;
         _timeProvider = timeProvider;
         _prnService = prnService;
@@ -70,6 +78,7 @@ public class PrnsController : Controller
         if (prnsResultViewModel != null)
         {
             prnsResultViewModel.PagingDetail.PagingLink = Url.Action(nameof(SearchPrns)) + qs;
+            await SetEprNextGenPrnLinksAsync(prnsResultViewModel);
         }
 
         await SetSessionBackLinkForShowPrnPage(Url.Action(nameof(SearchPrns)) + qs + request.Page);
@@ -172,6 +181,39 @@ public class PrnsController : Controller
         }
 
         return File(stream, MimeType, year is { } fileYear ? $"PRNDetail_{fileYear}.csv" : FileName);
+    }
+
+    // With ShowPrnsOnCdp on, awaiting acceptance, accepted and rejected notes open on EPR Next Gen, for the year the
+    // user chose (the current compliance year if none). Cancelled notes have no EPR Next Gen view, so they keep the
+    // packaging PRN page.
+    private async Task SetEprNextGenPrnLinksAsync(PrnSearchResultListViewModel searchResults)
+    {
+        if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp))
+        {
+            return;
+        }
+
+        var organisation = User.HasClaim(claim => claim.Type == ClaimTypes.UserData)
+            ? User.GetUserData().Organisations?.FirstOrDefault()
+            : null;
+        if (organisation is null)
+        {
+            return;
+        }
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var year = session?.PrnSession?.SelectedObligationYear ?? searchResults.ComplianceYear;
+
+        foreach (var prn in searchResults.ActivePageOfResults.Where(prn =>
+                     prn.ApprovalStatus is PrnStatus.AwaitingAcceptance or PrnStatus.Accepted or PrnStatus.Rejected))
+        {
+            prn.PrnHref = CsocHelper.GetPrnUrl(
+                _csocOptions.Value.WasteObligationsBaseAddress,
+                organisation,
+                session?.RegistrationSession,
+                prn.ExternalId,
+                year);
+        }
     }
 
     private async Task SetSessionBackLinkForShowPrnPage(string backLink)
