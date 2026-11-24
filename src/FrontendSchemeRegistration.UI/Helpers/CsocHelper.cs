@@ -119,7 +119,7 @@ public static class CsocHelper
         IFeatureManager featureManager,
         CsocOptions options,
         Organisation organisation,
-        RegistrationSession? registrationSession = null)
+        RegistrationSession? registrationSession)
     {
         if (!await featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp))
         {
